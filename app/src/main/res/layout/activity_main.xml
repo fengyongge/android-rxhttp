@@ -38,6 +38,13 @@
             android:text="登录"
             />
 
+        <Button
+            android:id="@+id/bt_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上传头像"
+            />
+
 
     </LinearLayout>
 </RelativeLayout>

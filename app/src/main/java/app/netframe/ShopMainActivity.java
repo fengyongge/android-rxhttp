@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +23,8 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,9 +68,6 @@ public class ShopMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shop_main);
         tv_name = (TextView) findViewById(R.id.tv_name);
         iv_logo = (ImageView) findViewById(R.id.iv_logo);
-        Intent intent = this.getIntent();
-        user=(LoginBean)intent.getSerializableExtra("bean");
-        tv_name.setText(user.getUsername());
         iv_logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,7 +78,6 @@ public class ShopMainActivity extends AppCompatActivity {
 
     // 换头像
     private void goUploadhead() {
-        Log.i("fyg","1111");
         headBean = MyNet.Inst().useredit(ShopMainActivity.this, user.getToken(), user.getMerchant_id());
         new Thread() {
             private Map<String, String> files;
@@ -97,7 +97,6 @@ public class ShopMainActivity extends AppCompatActivity {
                     JSONObject result;
                     result = UploadHelper.postFile(headBean.getApiUri(), map, files);
                     Log.i("fyg","头像" + result);
-
                     Message message = new Message();
                     message.obj = result;
                     handler.sendMessage(message);
@@ -136,8 +135,71 @@ public class ShopMainActivity extends AppCompatActivity {
     }
 
 
+    private void showTakePicture() {
+        ImageUtils.imageUriFromCamera = ImageUtils.createImagePathUri(ShopMainActivity.this);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
+        // 返回图片在onActivityResult中通过以下代码获取
+        // Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.imageUriFromCamera);
+        startActivityForResult(intent, ImageUtils.GET_IMAGE_BY_CAMERA);
 
-    // URI转绝对路径
+    }
+
+    private void showChoosePicture() {
+        Intent intent = new Intent(Intent.ACTION_PICK, null);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        startActivityForResult(intent, 1);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // 从相册获取
+            case 1:
+                if (data != null) {
+                    ImageUtils.cropImage(this, data.getData(), false);
+                }
+                break;
+            // 调用相机拍照时
+            case ImageUtils.GET_IMAGE_BY_CAMERA:
+                if (ImageUtils.imageUriFromCamera != null && resultCode == -1) {
+                    ImageUtils.cropImage(this, ImageUtils.imageUriFromCamera,false);
+                }
+                break;
+            // 取得裁剪后的图片
+            case 3:
+                break;
+            case ImageUtils.CROP_IMAGE:
+                if (ImageUtils.cropImageUri != null && data != null
+                        && resultCode == -1) {
+//                    try {
+//                        Bitmap image1 = MediaStore.Images.Media
+//                                        .getBitmap(getContentResolver(),ImageUtils.cropImageUri);//用系统方法会oom
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+                      bitmap_url = getAbsoluteImagePath(ImageUtils.cropImageUri);
+                      Log.i("fyg","bitmap_url:"+bitmap_url);
+//                    ImageLoader.getInstance().displayImage("file://" + bitmap_url, iv_logo);
+                      Bitmap image =getimage(bitmap_url);
+                      iv_logo.setImageBitmap(image);
+                    }
+                break;
+            default:
+                break;
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    /**
+     * URI转绝对路径
+     * @param uri
+     * @return
+     */
     public String getAbsoluteImagePath(Uri uri) {
         // can post image
         String[] proj = { MediaStore.MediaColumns.DATA };
@@ -152,64 +214,55 @@ public class ShopMainActivity extends AppCompatActivity {
         return cursor.getString(column_index);
     }
 
-
-    private void showTakePicture() {
-        ImageUtils.imageUriFromCamera = ImageUtils
-                .createImagePathUri(ShopMainActivity.this);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
-        // 返回图片在onActivityResult中通过以下代码获取
-        // Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.imageUriFromCamera);
-        startActivityForResult(intent, ImageUtils.GET_IMAGE_BY_CAMERA);
-
-    }
-
-    private void showChoosePicture() {
-
-        Intent intent = new Intent(Intent.ACTION_PICK, null);
-
-        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                "image/*");
-        startActivityForResult(intent, 1);
-
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            // 如果是直接从相册获取
-            case 1:
-                if (data != null) {
-                    ImageUtils.cropImage(this, data.getData(), false);
-                }
-                break;
-            // 如果是调用相机拍照时
-            case ImageUtils.GET_IMAGE_BY_CAMERA:
-
-                if (ImageUtils.imageUriFromCamera != null && resultCode == -1) {
-                    ImageUtils.cropImage(this, ImageUtils.imageUriFromCamera,false);
-                }
-
-                break;
-            // 取得裁剪后的图片
-            case 3:
-                break;
-            case ImageUtils.CROP_IMAGE:
-                if (ImageUtils.cropImageUri != null && data != null
-                        && resultCode == -1) {
-                    bitmap_url = getAbsoluteImagePath(ImageUtils.cropImageUri);
-                    Log.i("fyg","--bitmap_url-" + bitmap_url);
-                    goUploadhead();
-                }
-                break;
-
-            default:
-                break;
-
+    /**
+     * 压缩图片 防止oom
+     * @param srcPath
+     * @return
+     */
+    public static Bitmap getimage(String srcPath) {
+        BitmapFactory.Options newOpts = new BitmapFactory.Options();
+        newOpts.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(srcPath,newOpts);//此时返回bm为空
+        newOpts.inJustDecodeBounds = false;
+        int w = newOpts.outWidth;
+        int h = newOpts.outHeight;
+        float hh = 800f;//这里设置高度为800f
+        float ww = 480f;//这里设置宽度为480f
+        int be = 1;//be=1表示不缩放
+        if (w > h && w > ww) {//如果宽度大的话根据宽度固定大小缩放
+            be = (int) (newOpts.outWidth / ww);
+        } else if (w < h && h > hh) {//如果高度高的话根据宽度固定大小缩放
+            be = (int) (newOpts.outHeight / hh);
         }
-        super.onActivityResult(requestCode, resultCode, data);
+        if (be <= 0)
+            be = 1;
+        newOpts.inSampleSize = be;//设置缩放比例
+        newOpts.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        newOpts.inPurgeable = true;
+        newOpts.inInputShareable = true;
+        newOpts.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeFile(srcPath, newOpts);
+        return compressImage(bitmap);//压缩好比例大小后再进行质量压缩
+    }
+
+    public static Bitmap compressImage(Bitmap image) {
+        Bitmap c_bitmap = null ;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+            int options = 100;
+            while ( baos.toByteArray().length / 1024>100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
+                baos.reset();//重置baos即清空baos
+                image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
+                options -= 10;//每次都减少10
+            }
+            ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
+            c_bitmap = BitmapFactory.decodeStream(isBm, null, null);
+            return c_bitmap;
+        } catch (Exception e) {
+            return c_bitmap;
+        }
+
     }
 
 

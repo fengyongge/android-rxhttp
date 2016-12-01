@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private EditText et_username,et_pass;
-    private Button bt_login;
+    private Button bt_login,bt_upload;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +35,14 @@ public class MainActivity extends AppCompatActivity {
                 loadMore(et_username.getText().toString(),et_pass.getText().toString());
             }
         });
+        bt_upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+               Intent intent = new Intent(MainActivity.this,ShopMainActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -43,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         et_username = (EditText) findViewById(R.id.et_username);
         et_pass = (EditText) findViewById(R.id.et_pass);
         bt_login= (Button) findViewById(R.id.bt_login);
+        bt_upload= (Button) findViewById(R.id.bt_upload);
     }
 
 
@@ -51,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         MyNet.Inst().Login(MainActivity.this, username, password, new ApiCallback() {
             @Override
             public void onDataSuccess(JSONObject data) {
-                Log.i("fyg","data:"+data);
                 String code =  data.getString("code");
                 LoginBean loginBean = JSON.parseObject(data.getString("data"),LoginBean.class);
                 if(code.equals("0")){
