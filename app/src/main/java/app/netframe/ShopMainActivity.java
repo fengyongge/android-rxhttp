@@ -114,6 +114,9 @@ public class ShopMainActivity extends AppCompatActivity {
 
 
 
+
+
+
     private void headImg() {
         List<String> list = new ArrayList<>();
         View vv = LayoutInflater.from(this).inflate(R.layout.item_dialog_title, null);
@@ -124,7 +127,6 @@ public class ShopMainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
-
                     showChoosePicture();
                 } else if (which == 1) {
                     showTakePicture();
@@ -174,17 +176,28 @@ public class ShopMainActivity extends AppCompatActivity {
             case ImageUtils.CROP_IMAGE:
                 if (ImageUtils.cropImageUri != null && data != null
                         && resultCode == -1) {
-//                    try {
-//                        Bitmap image1 = MediaStore.Images.Media
-//                                        .getBitmap(getContentResolver(),ImageUtils.cropImageUri);//用系统方法会oom
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
                       bitmap_url = getAbsoluteImagePath(ImageUtils.cropImageUri);
-                      Log.i("fyg","bitmap_url:"+bitmap_url);
-//                    ImageLoader.getInstance().displayImage("file://" + bitmap_url, iv_logo);
-                      Bitmap image =getimage(bitmap_url);
-                      iv_logo.setImageBitmap(image);
+                      ImageLoader.getInstance().displayImage("file://" + bitmap_url, iv_logo);
+//                      Bitmap image =getimage(bitmap_url);
+//                      iv_logo.setImageBitmap(image);
+
+//                      File file = new File(bitmap_url);
+//                      MyNet1.Inst(ShopMainActivity.this).updateLogo(file, "", "", new ApiCallback() {
+//                          @Override
+//                          public void onDataSuccess(JSONObject data) {
+//
+//                          }
+//
+//                          @Override
+//                          public void onDataError(JSONObject data) {
+//
+//                          }
+//
+//                          @Override
+//                          public void onNetError(String data) {
+//
+//                          }
+//                      });
                     }
                 break;
             default:

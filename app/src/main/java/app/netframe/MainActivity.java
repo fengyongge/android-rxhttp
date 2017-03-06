@@ -3,7 +3,6 @@ package app.netframe;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadMore(String username,String password){
-        MyNet.Inst().Login(MainActivity.this, username, password, new ApiCallback() {
+        MyNet1.Inst(MainActivity.this).Login(MainActivity.this, username, password, new ApiCallback() {
             @Override
             public void onDataSuccess(JSONObject data) {
                 String code =  data.getString("code");

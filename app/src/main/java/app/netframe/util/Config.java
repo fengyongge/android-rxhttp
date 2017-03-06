@@ -7,5 +7,4 @@ public class Config {
 
     public static final int REQUEST_CAREME = 12;
     public static final int REQUEST_PHOTE = 11;
-
 }

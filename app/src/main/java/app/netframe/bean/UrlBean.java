@@ -12,8 +12,6 @@ public class UrlBean {
         super();
     }
 
-
-
     public UrlBean(String apiUri, String noncestr, String time,
                    String version) {
         super();
@@ -44,8 +42,6 @@ public class UrlBean {
         this.time = time;
     }
 
-
-
     public String getVersion() {
         return version;
     }
@@ -53,7 +49,5 @@ public class UrlBean {
     public void setVersion(String version) {
         this.version = version;
     }
-
-
 
 }
