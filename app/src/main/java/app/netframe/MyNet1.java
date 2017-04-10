@@ -41,11 +41,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import app.netframe.app.MyApp;
 import app.netframe.callback.ApiCallback;
 import app.netframe.util.MD5;
+import app.netframe.util.Sha1;
 import app.netframe.util.StringUtils;
+import okhttp3.MultipartBody;
 
 import static app.netframe.MyNet.device;
 import static app.netframe.MyNet.version;
@@ -58,17 +61,16 @@ import static app.netframe.MyNet.version;
  * java提供的api
  */
 public class MyNet1 {
-    public final static String NET_DOMAIN ="http://api.ediankai.com/dkapiv2.php";
+    public final static String NET_DOMAIN = "http://api.ediankai.com/dkapiv2.php";
 
-    private String appSecret="app123!@#";
-    private String publicKey="app123456";
+    private String appSecret = "";
+    private String publicKey = "";
     private static MyNet1 mInstance;
     private OkHttpClient mOkHttpClient;
     private Handler mDelivery;
     private static SharedPreferences sp;
     private static MyApp myApp;
     private static Context cxt;
-
 
 
     private MyNet1() {
@@ -120,15 +122,16 @@ public class MyNet1 {
 
         String sortString = sort(map);
         String sign = toMD5(sortString);
-        final String apiUri = NET_DOMAIN + "?c=login"+ "&sign=" + sign;
+        final String apiUri = NET_DOMAIN + "?c=login" + "&sign=" + sign;
         List<Param> params = new ArrayList<Param>();
-        params= getParameter(map,sign);
+        params = getParameter(map, sign);
         _postAsyn(apiUri, callback, params);
     }
 
 
     /**
      * 个人信息-修改头像
+     *
      * @param pic
      * @param token
      * @param merchant_id
@@ -147,7 +150,7 @@ public class MyNet1 {
         map.put("c", "useredit");
         String sortString = sort(token, map);
         String sign = toMD5(sortString);
-        final String apiUri = NET_DOMAIN +"?c=useredit" + "&sign=" + sign;
+        final String apiUri = NET_DOMAIN + "?c=useredit" + "&sign=" + sign;
         List<Param> params = new ArrayList<>();
         try {
             _postAsyn(apiUri, callback, pic, "portrait", params);
@@ -156,58 +159,56 @@ public class MyNet1 {
         }
     }
 
-
     //----------------------------------------------
-
 
 
     /**
      * 参与get请求的url参数拼接
+     *
      * @param map
      * @param sign
      * @return
      */
-    public String getpParameter(Map<String,String> map,String sign){
+    public String getpParameter(Map<String, String> map, String sign) {
         StringBuilder buffer = new StringBuilder();
         Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
             buffer.append("&").append(entry.getKey()).append("=").append(
-                    entry.getValue()!= null && entry.getValue().length()
+                    entry.getValue() != null && entry.getValue().length()
                             > 0 ? entry.getValue() : "");
         }
         String parameterString = buffer.toString();
-        String s2="";
-        if(parameterString.length()>0){
-            s2 = parameterString.substring(1,parameterString.length());
-            s2+= "&sign="+ sign;
-//            s2+= "&sign="+ sign +"&publicKey="+publicKey;
+        String s2 = "";
+        if (parameterString.length() > 0) {
+            s2 = parameterString.substring(1, parameterString.length());
+            s2 += "&sign=" + sign + "&publicKey=" + publicKey;
         }
         return s2;
     }
 
 
     /**
-     * 参与put，post，delete请求的，参数list
+     * 参与put，post请求的，参数list
+     *
      * @param map
      * @param sign
      * @return
      */
-    public List<Param>  getParameter(Map<String,String> map,String sign){
+    public List<Param> getParameter(Map<String, String> map, String sign) {
 
         Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
         List<Param> params = new ArrayList<>();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
-            params.add(new Param(entry.getKey(),entry.getValue()!= null && entry.getValue().length()
+            params.add(new Param(entry.getKey(), entry.getValue() != null && entry.getValue().length()
                     > 0 ? entry.getValue() : ""));
+
         }
         params.add(new Param("sign", sign));
-//        params.add(new Param("publicKey", publicKey));
+        params.add(new Param("publicKey", publicKey));
         return params;
     }
-
-
 
 
     //--------------------------加密规则-------------------------------------------
@@ -236,10 +237,10 @@ public class MyNet1 {
         return sb.toString();
     }
 
-    public String toMD5(String or_Sign) {
-//            sign = MD5.getMessageDigest(or_Sign.getBytes("UTF-8"));
-        String  sign = MD5.getMessageDigest(or_Sign.getBytes()).toUpperCase();
 
+    public static String toMD5(String or_Sign) {
+        String sign = null;
+        sign = Sha1.shaEncrypt(or_Sign);
         return sign;
     }
 
@@ -247,9 +248,9 @@ public class MyNet1 {
     //--------------------------------okhttp功能模块-----------------------------------------
 
 
-
     /**
      * put方式
+     *
      * @param url
      * @param callback
      * @param params
@@ -261,6 +262,7 @@ public class MyNet1 {
 
     /**
      * delete方式
+     *
      * @param url
      * @param callback
      * @param params
@@ -277,8 +279,7 @@ public class MyNet1 {
      * @param url
      * @return Response
      */
-    private void _getSynchronization(String url, final ApiCallback callback)
-    {
+    private void _getSynchronization(String url, final ApiCallback callback) {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -289,9 +290,8 @@ public class MyNet1 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        deliveryResult(callback,execute);
+        deliveryResult(callback, execute);
     }
-
 
 
     /**
@@ -300,8 +300,7 @@ public class MyNet1 {
      * @param url
      * @param callback
      */
-    private void _getAsyn(String url, final ApiCallback callback)
-    {
+    private void _getAsyn(String url, final ApiCallback callback) {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -322,21 +321,16 @@ public class MyNet1 {
     }
 
 
+    // ------------------------------------------------------------------------------------------------
 
     /**
      * 同步基于post的文件上传
      *
      * @param params
-     *
      * @return
      */
     private Response _post(String url, File[] files, String[] fileKeys, List<Param> params) throws IOException {
         Request request = buildMultipartFormRequest(url, files, fileKeys, params);
-        return mOkHttpClient.newCall(request).execute();
-    }
-
-    private Response _post(String url, File file, String fileKey) throws IOException {
-        Request request = buildMultipartFormRequest(url, new File[]{file}, new String[]{fileKey}, null);
         return mOkHttpClient.newCall(request).execute();
     }
 
@@ -345,20 +339,11 @@ public class MyNet1 {
         return mOkHttpClient.newCall(request).execute();
     }
 
-    /**
-     * 异步基于post的文件上传
-     *
-     * @param url
-     * @param callback
-     * @param files
-     * @param fileKeys
-     *
-     * @throws IOException
-     */
-    private void _postAsyn(String url, ApiCallback callback, File[] files, String[] fileKeys, List<Param> params) throws IOException {
-        Request request = buildMultipartFormRequest(url, files, fileKeys, params);
-        deliveryResult(callback, request);
+    private Response _post(String url, File file, String fileKey) throws IOException {
+        Request request = buildMultipartFormRequest(url, new File[]{file}, new String[]{fileKey}, null);
+        return mOkHttpClient.newCall(request).execute();
     }
+
 
     /**
      * 异步基于post的文件上传，单文件不带参数上传
@@ -367,7 +352,6 @@ public class MyNet1 {
      * @param callback
      * @param file
      * @param fileKey
-     *
      * @throws IOException
      */
     private void _postAsyn(String url, ApiCallback callback, File file, String fileKey) throws IOException {
@@ -383,18 +367,33 @@ public class MyNet1 {
      * @param file
      * @param fileKey
      * @param params
-     *
      * @throws IOException
      */
     private void _postAsyn(String url, ApiCallback callback, File file, String fileKey, List<Param> params) throws IOException {
 
-//        apiUri, callback, pic, "header_img", params
         Request request = buildMultipartFormRequest(url, new File[]{file}, new String[]{fileKey}, params);
         deliveryResult(callback, request);
     }
 
+
+    /**
+     * 异步基于post的文件上传
+     *
+     * @param url
+     * @param callback
+     * @param files
+     * @param fileKeys
+     * @throws IOException
+     */
+    private void _postAsyn(String url, ApiCallback callback, File[] files, String fileKeys, List<Param> params) throws IOException {
+        Request request = buildMultipartFormRequest(url, files, new String[]{fileKeys}, params);
+        deliveryResult(callback, request);
+    }
+
+
     /**
      * put上传文件
+     *
      * @param url
      * @param callback
      * @param file
@@ -419,10 +418,11 @@ public class MyNet1 {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        final com.squareup.okhttp.Call call = mOkHttpClient.newCall(request);
+        final Call call = mOkHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(final Request request, final IOException e) {
+
 //                sendFailedStringCallback(request, e, callback);
             }
 
@@ -432,80 +432,116 @@ public class MyNet1 {
                 byte[] buf = new byte[2048];
                 int len = 0;
                 FileOutputStream fos = null;
-//                try
-//                {
-//                    is = response.body().byteStream();
-//                    File file = new File(destFileDir, getFileName(url));
-//                    fos = new FileOutputStream(file);
-//                    while ((len = is.read(buf)) != -1)
-//                    {
-//                        fos.write(buf, 0, len);
-//                    }
-//                    fos.flush();
-//                    //如果下载文件成功，第一个参数为文件的绝对路径
+                try {
+                    is = response.body().byteStream();
+                    File file = new File(destFileDir, getFileName(url));
+                    fos = new FileOutputStream(file);
+                    while ((len = is.read(buf)) != -1) {
+                        fos.write(buf, 0, len);
+                    }
+                    fos.flush();
+                    //如果下载文件成功，第一个参数为文件的绝对路径
 //                    sendSuccessApiCallback(file.getAbsolutePath(), callback);
-//                } catch (IOException e)
-//                {
+
+                } catch (IOException e) {
 //                    sendFailedStringCallback(response.request(), e, callback);
-//                } finally
-//                {
-//                    try
-//                    {
-//                        if (is != null) is.close();
-//                    } catch (IOException e)
-//                    {
-//                    }
-//                    try
-//                    {
-//                        if (fos != null) fos.close();
-//                    } catch (IOException e)
-//                    {
-//                    }
-//                }
+                } finally {
+                    try {
+                        if (is != null) is.close();
+                    } catch (IOException e) {
+                    }
+                    try {
+                        if (fos != null) fos.close();
+                    } catch (IOException e) {
+                    }
+                }
             }
         });
     }
 
-    private String getFileName(String path) {
-        int separatorIndex = path.lastIndexOf("/");
-        return (separatorIndex < 0) ? path : path.substring(separatorIndex + 1, path.length());
+    private static final okhttp3.MediaType MEDIA_TYPE_PNG = okhttp3.MediaType.parse("image/png");
+    private final okhttp3.OkHttpClient client = new okhttp3.OkHttpClient();
+
+    /**
+     * okhttp3多图上传
+     *
+     * @param base_url
+     * @param mImgUrls
+     * @param params
+     * @param field
+     */
+    public void uploadImg(String base_url, List<String> mImgUrls, List<Param> params, String field, final ApiCallback callback) {
+
+        // mImgUrls为存放图片的url集合
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        for (int i = 0; i < mImgUrls.size(); i++) {
+            File f = new File(mImgUrls.get(i));
+            if (f != null) {
+                builder.addFormDataPart(field, f.getName(), okhttp3.RequestBody.create(MEDIA_TYPE_PNG, f));
+            }
+        }
+        //添加其它信息
+        for (Param param : params) {
+            builder.addFormDataPart(param.key, param.value);
+        }
+
+
+        MultipartBody requestBody = builder.build();
+        //构建请求
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(base_url)//地址
+                .post(requestBody)//添加请求体
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+
+//                Logger.i("上传失败:e.getLocalizedMessage() = " + e.getLocalizedMessage());
+
+                if (StringUtils.isNotEmpty(e.getMessage())) {
+
+                    if (e.getMessage().contains("No address associated with hostname")) {
+                        sendNetErrorStringCallback("网络异常,请检查网络", callback);
+                    }
+
+                } else {
+                    sendNetErrorStringCallback(callback);
+                }
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) {
+
+                try {
+                    String str = response.body().string();
+//                    Logger.i("后台响应：" + response.message() + "--" + response.code() + "后台返回数据：" + str);
+
+                    JSONObject result = JSON.parseObject(str);
+
+                    //如果后台报错，result对象为null
+                    if (result != null) {
+                        if (Integer.parseInt(result.getString("code")) >= 200 && Integer.parseInt(result.getString("code")) < 300) {
+                            sendSuccessApiCallback(result, callback);
+                        } else {
+                            sendFailedStringCallback(result, callback);
+                        }
+                    } else {
+                        sendNetErrorStringCallback(response.message() + "-code:" + response.code(), callback);
+                    }
+
+                } catch (final Exception e) {
+
+                    sendNetErrorStringCallback(callback);
+                }
+            }
+
+        });
+
     }
 
 
-//    public static Response post(String url, File[] files, String[] fileKeys, Param... params) throws IOException
-//    {
-//        return getInstance()._post(url, files, fileKeys, params);
-//    }
-//
-//    public static Response post(String url, File file, String fileKey) throws IOException
-//    {
-//        return getInstance()._post(url, file, fileKey);
-//    }
-//
-//    public static Response post(String url, File file, String fileKey, Param... params) throws IOException
-//    {
-//        return getInstance()._post(url, file, fileKey, params);
-//    }
-//
-//    public static void postAsyn(String url, ApiCallback callback, File[] files, String[] fileKeys, Param... params) throws IOException
-//    {
-//        getInstance()._postAsyn(url, callback, files, fileKeys, params);
-//    }
-//
-//
-//    public static void postAsyn(String url, ApiCallback callback, File file, String fileKey) throws IOException
-//    {
-//        getInstance()._postAsyn(url, callback, file, fileKey);
-//    }
-//
-//
-//    public static void postAsyn(String url, ApiCallback callback, File file, String fileKey, Param... params) throws IOException
-//    {
-//        getInstance()._postAsyn(url, callback, file, fileKey, params);
-//    }
-
-
-    //****************************
+    //--------------------------------------------------------------------------------------------
 
 
     private Request buildMultipartFormRequest1(String url, File[] files,
@@ -528,6 +564,7 @@ public class MyNet1 {
                 builder.addPart(Headers.of("Content-Disposition",
                         "form-data; name=\"" + fileKeys[i] + "\"; filename=\"" + fileName + "\""),
                         fileBody);
+
             }
         }
 
@@ -537,8 +574,6 @@ public class MyNet1 {
                 .put(requestBody)
                 .build();
     }
-
-
 
 
     private Request buildMultipartFormRequest(String url, File[] files,
@@ -576,6 +611,7 @@ public class MyNet1 {
                 .build();
     }
 
+
     private String guessMimeType(String path) {
         FileNameMap fileNameMap = URLConnection.getFileNameMap();
         String contentTypeFor = fileNameMap.getContentTypeFor(path);
@@ -585,20 +621,21 @@ public class MyNet1 {
         return contentTypeFor;
     }
 
-    private Param[] validateParam(Param[] params) {
-        if (params == null)
-            return new Param[0];
-        else return params;
-    }
 
     private void deliveryResult(final ApiCallback callback, Request request) {
 
         mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(final Request request, final IOException e) {
-                if(StringUtils.isNotEmpty(e.getMessage())){
-                    sendNetErrorStringCallback(e.getMessage(),callback);
-                }else{
+//                Logger.i("数据返回异常："+e.getMessage());
+
+                if (StringUtils.isNotEmpty(e.getMessage())) {
+
+                    if (e.getMessage().contains("No address associated with hostname")) {
+                        sendNetErrorStringCallback("网络异常,请检查网络", callback);
+                    }
+
+                } else {
                     sendNetErrorStringCallback(callback);
                 }
 
@@ -608,21 +645,19 @@ public class MyNet1 {
             public void onResponse(final Response response) {
                 try {
                     String str = response.body().string();
-
-                    Log.i("fyg","str:"+str);
+//                    Logger.i("后台响应："+response.message()+"--"+response.code()+"后台返回数据："+str);
 
                     JSONObject result = JSON.parseObject(str);
 
                     //如果后台报错，result对象为null
-                    if(result!=null){
-                        if(Integer.parseInt(result.getString("code"))==0||Integer.parseInt(result.getString("code"))>=200&&Integer.parseInt(result.getString("code"))<300){
+                    if (result != null) {
+                        if (Integer.parseInt(result.getString("code")) >= 200 && Integer.parseInt(result.getString("code")) < 300) {
                             sendSuccessApiCallback(result, callback);
-                        }else{
+                        } else {
                             sendFailedStringCallback(result, callback);
                         }
-                    }
-                    else{
-                        sendNetErrorStringCallback(response.message()+"-code:"+response.code(),callback);
+                    } else {
+                        sendNetErrorStringCallback(response.message() + "-code:" + response.code(), callback);
                     }
 
                 } catch (final Exception e) {
@@ -635,20 +670,19 @@ public class MyNet1 {
     }
 
 
-
     //同步返回的
     private void deliveryResult(final ApiCallback callback, Response execute) {
         try {
             String str = execute.body().string();
             JSONObject result = JSON.parseObject(str);
 
-            if(result!=null){
-                if(Integer.parseInt(result.getString("code"))>200&&Integer.parseInt(result.getString("code"))<300){
+            if (result != null) {
+                if (Integer.parseInt(result.getString("code")) > 200 && Integer.parseInt(result.getString("code")) < 300) {
                     sendSuccessApiCallback(result, callback);
-                }else{
+                } else {
                     sendReStartCallback(callback);
                 }
-            }else{
+            } else {
                 sendFailedStringCallback(result, callback);
             }
 
@@ -681,7 +715,7 @@ public class MyNet1 {
         });
     }
 
-    private void sendNetErrorStringCallback(final String message,final ApiCallback callback) {
+    private void sendNetErrorStringCallback(final String message, final ApiCallback callback) {
         mDelivery.post(new Runnable() {
             @Override
             public void run() {
@@ -706,9 +740,9 @@ public class MyNet1 {
         mDelivery.post(new Runnable() {
             @Override
             public void run() {
-                setIsLogin();
-                Intent intent = new Intent(cxt, ShopMainActivity.class);
-                cxt.startActivity(intent);
+//                setIsLogin();
+//                Intent intent = new Intent(cxt, LoginActivity.class);
+//                cxt.startActivity(intent);
             }
         });
     }
@@ -757,8 +791,10 @@ public class MyNet1 {
     public static class Param {
         String key;
         String value;
+
         public Param() {
         }
+
         public Param(String key, String value) {
             this.key = key;
             this.value = value;
@@ -772,6 +808,7 @@ public class MyNet1 {
                     '}';
         }
     }
+
     private void setIsLogin() {
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("login", false);
@@ -779,13 +816,21 @@ public class MyNet1 {
     }
 
     private String getTime() {
-
-        return System.currentTimeMillis() / 1000 + "";
+        return System.currentTimeMillis() + "";
     }
 
     private String getNoncestr() {
         return UUID.randomUUID().toString().trim().replaceAll("-", "").trim();
     }
 
-}
+    private String getFileName(String path) {
+        int separatorIndex = path.lastIndexOf("/");
+        return (separatorIndex < 0) ? path : path.substring(separatorIndex + 1, path.length());
+    }
 
+    private Param[] validateParam(Param[] params) {
+        if (params == null)
+            return new Param[0];
+        else return params;
+    }
+}

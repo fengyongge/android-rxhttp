@@ -178,26 +178,6 @@ public class ShopMainActivity extends AppCompatActivity {
                         && resultCode == -1) {
                       bitmap_url = getAbsoluteImagePath(ImageUtils.cropImageUri);
                       ImageLoader.getInstance().displayImage("file://" + bitmap_url, iv_logo);
-//                      Bitmap image =getimage(bitmap_url);
-//                      iv_logo.setImageBitmap(image);
-
-//                      File file = new File(bitmap_url);
-//                      MyNet1.Inst(ShopMainActivity.this).updateLogo(file, "", "", new ApiCallback() {
-//                          @Override
-//                          public void onDataSuccess(JSONObject data) {
-//
-//                          }
-//
-//                          @Override
-//                          public void onDataError(JSONObject data) {
-//
-//                          }
-//
-//                          @Override
-//                          public void onNetError(String data) {
-//
-//                          }
-//                      });
                     }
                 break;
             default:
