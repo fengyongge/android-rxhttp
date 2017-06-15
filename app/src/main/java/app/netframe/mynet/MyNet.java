@@ -1,4 +1,4 @@
-package app.netframe;
+package app.netframe.mynet;
 
 import android.content.Context;
 import android.os.Handler;
@@ -19,8 +19,8 @@ import java.util.UUID;
 
 import app.netframe.bean.UrlBean;
 import app.netframe.callback.ApiCallback;
-import app.netframe.util.MD5;
-import app.netframe.util.NetUtil;
+import app.netframe.encrypt.MD5;
+import app.netframe.utils.NetUtils;
 
 /**
  * Created by fengyongge on 16/5/12.
@@ -132,7 +132,7 @@ import app.netframe.util.NetUtil;
             public void run() {
 
                 try {
-                    jsonObject = NetUtil
+                    jsonObject = NetUtils
                             .getResponseForPost(apiUri, params, ctx);
 
                     if (jsonObject != null

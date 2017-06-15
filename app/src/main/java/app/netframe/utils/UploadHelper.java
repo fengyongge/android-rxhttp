@@ -1,4 +1,4 @@
-package app.netframe.util;
+package app.netframe.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

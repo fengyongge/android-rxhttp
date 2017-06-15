@@ -1,4 +1,4 @@
-package app.netframe.util;
+package app.netframe.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,8 +28,8 @@ import java.util.List;
  * Created by fengyongge on 16/5/12.
  */
 
-public class NetUtil {
-    private static final String TAG = "NetUtil";  
+public class NetUtils {
+    private static final String TAG = "NetUtils";
   
     /** 
      * 网络连接是否可用 

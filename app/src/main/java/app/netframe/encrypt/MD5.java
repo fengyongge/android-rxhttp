@@ -1,4 +1,4 @@
-package app.netframe.util;
+package app.netframe.encrypt;
 
 import java.security.MessageDigest;
 

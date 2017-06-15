@@ -1,17 +1,9 @@
-package app.netframe;
-
-/**
- * @author fengyongge
- * @date 2017/3/6 0006
- * @description
- */
+package app.netframe.mynet;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -25,7 +17,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,28 +32,27 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import app.netframe.app.MyApp;
+import app.netframe.bean.LoginBean;
 import app.netframe.callback.ApiCallback;
-import app.netframe.util.MD5;
-import app.netframe.util.Sha1;
-import app.netframe.util.StringUtils;
+import app.netframe.encrypt.Base64;
+import app.netframe.encrypt.Sha1;
+import app.netframe.utils.StringUtils;
 import okhttp3.MultipartBody;
-
-import static app.netframe.MyNet.device;
-import static app.netframe.MyNet.version;
-
+import static app.netframe.mynet.MyNet.device;
+import static app.netframe.mynet.MyNet.version;
 
 /**
  * @author fengyongge
  * @date 2017/1/3 0003
- * @description
- * java提供的api
+ * @description  封装okhttp网络请求
+ *
  */
-public class MyNet1 {
-    public final static String NET_DOMAIN = "http://api.ediankai.com/dkapiv2.php";
 
+
+public class MyNet1 {
+
+    public final static String NET_DOMAIN = "http://api.ediankai.com/dkapiv2.php";
     private String appSecret = "";
     private String publicKey = "";
     private static MyNet1 mInstance;
@@ -98,9 +88,6 @@ public class MyNet1 {
             sp = myApp.getMustElement();
         }
 
-//        staff_id = myApp.getStaff_id();
-//        supplier_id = myApp.getSupplier_id();
-//        Logger.i("supplier_id",supplier_id);
         return mInstance;
     }
 
@@ -158,6 +145,16 @@ public class MyNet1 {
             e.printStackTrace();
         }
     }
+
+
+
+    /**
+     * json作为参数，明文的话转义{}，否则base64加密
+     */
+    LoginBean loginBean = new LoginBean();
+    String products = Base64.Instance().encrypt(JSON.toJSONString(loginBean));
+    String scene = loginBean.toString().replace("\"", "%22").replace("{", "%7b").replace("}", "%7d");
+
 
     //----------------------------------------------
 

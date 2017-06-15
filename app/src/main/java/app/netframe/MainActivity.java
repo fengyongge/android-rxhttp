@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import app.netframe.bean.LoginBean;
 import app.netframe.callback.ApiCallback;
+import app.netframe.mynet.MyNet1;
 
 /**
  * Created by fengyongge on 16/5/12.

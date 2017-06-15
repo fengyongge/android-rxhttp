@@ -1,4 +1,4 @@
-package app.netframe.util;
+package app.netframe.utils;
 
 import android.app.Activity;
 import android.content.ContentValues;

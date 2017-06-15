@@ -32,8 +32,9 @@ import java.util.Map;
 
 import app.netframe.bean.LoginBean;
 import app.netframe.bean.UrlBean;
-import app.netframe.util.ImageUtils;
-import app.netframe.util.UploadHelper;
+import app.netframe.mynet.MyNet;
+import app.netframe.utils.ImageUtils;
+import app.netframe.utils.UploadHelper;
 
 /**
  * Created by fengyongge on 16/5/12.

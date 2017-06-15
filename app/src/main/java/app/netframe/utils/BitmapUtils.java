@@ -1,4 +1,4 @@
-package app.netframe.util;
+package app.netframe.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import java.io.IOException;
 /**
  * Created by fengyongge on 2016/05/20.
  */
-public class BitmapUtil {
+public class BitmapUtils {
     public static int computeSampleSize(BitmapFactory.Options options, int minSideLength, int maxNumOfPixels) {
         int initialSize = computeInitialSampleSize(options, minSideLength, maxNumOfPixels);
         int roundedSize;

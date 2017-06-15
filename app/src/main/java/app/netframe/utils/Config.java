@@ -1,4 +1,4 @@
-package app.netframe.util;
+package app.netframe.utils;
 
 /**
  * Created by fengyongge on 2016/5/16 0016.
