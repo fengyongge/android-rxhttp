@@ -1,4 +1,4 @@
-package app.netframe;
+package app.netframe.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -22,19 +22,14 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
+import app.netframe.R;
 import app.netframe.bean.LoginBean;
 import app.netframe.bean.UrlBean;
-import app.netframe.mynet.MyNet;
 import app.netframe.utils.ImageUtils;
-import app.netframe.utils.UploadHelper;
 
 /**
  * Created by fengyongge on 16/5/12.
@@ -77,42 +72,39 @@ public class ShopMainActivity extends AppCompatActivity {
         });
     }
 
-    // 换头像
-    private void goUploadhead() {
-        headBean = MyNet.Inst().useredit(ShopMainActivity.this, user.getToken(), user.getMerchant_id());
-        new Thread() {
-            private Map<String, String> files;
-            @Override
-            public void run() {
-                files = new HashMap<String, String>();
-                files.put("portrait", bitmap_url);
-
-                final Map<String, String> map = new HashMap<String, String>();
-                map.put("version", headBean.getVersion());
-                map.put("time", headBean.getTime());
-                map.put("noncestr", headBean.getNoncestr());
-                map.put("merchant_id", user.getMerchant_id());
-                map.put("token", user.getToken());
-
-                try {
-                    JSONObject result;
-                    result = UploadHelper.postFile(headBean.getApiUri(), map, files);
-                    Log.i("fyg","头像" + result);
-                    Message message = new Message();
-                    message.obj = result;
-                    handler.sendMessage(message);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-
-                    e.printStackTrace();
-                }
-
-            }
-        }.start();
-    }
-
-
-
+//    // 换头像
+//    private void goUploadhead() {
+//        headBean = Api.Inst(ShopMainActivity.this).useredit(ShopMainActivity.this, user.getToken(), user.getMerchant_id());
+//        new Thread() {
+//            private Map<String, String> files;
+//            @Override
+//            public void run() {
+//                files = new HashMap<String, String>();
+//                files.put("portrait", bitmap_url);
+//
+//                final Map<String, String> map = new HashMap<String, String>();
+//                map.put("version", headBean.getVersion());
+//                map.put("time", headBean.getTime());
+//                map.put("noncestr", headBean.getNoncestr());
+//                map.put("merchant_id", user.getMerchant_id());
+//                map.put("token", user.getToken());
+//
+//                try {
+//                    JSONObject result;
+//                    result = UploadHelper.postFile(headBean.getApiUri(), map, files);
+//                    Log.i("fyg","头像" + result);
+//                    Message message = new Message();
+//                    message.obj = result;
+//                    handler.sendMessage(message);
+//                } catch (Exception e) {
+//                    // TODO Auto-generated catch block
+//
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }.start();
+//    }
 
 
 

@@ -13,7 +13,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import app.netframe.bean.LoginBean;
 import app.netframe.callback.ApiCallback;
-import app.netframe.mynet.MyNet1;
+import app.netframe.mynet.api.Api;
+import app.netframe.ui.ShopMainActivity;
 
 /**
  * Created by fengyongge on 16/5/12.
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadMore(String username,String password){
-        MyNet1.Inst(MainActivity.this).Login(MainActivity.this, username, password, new ApiCallback() {
+        Api.Inst(MainActivity.this).Login(MainActivity.this, username, password, new ApiCallback() {
             @Override
             public void onDataSuccess(JSONObject data) {
                 String code =  data.getString("code");

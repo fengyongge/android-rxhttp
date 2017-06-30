@@ -1,4 +1,4 @@
-package app.netframe.mynet;
+package app.netframe.mynet.api;
 
 import android.content.Context;
 import android.os.Handler;
@@ -20,33 +20,34 @@ import java.util.UUID;
 import app.netframe.bean.UrlBean;
 import app.netframe.callback.ApiCallback;
 import app.netframe.encrypt.MD5;
-import app.netframe.utils.NetUtils;
+import app.netframe.mynet.MyNetUtils;
 
 /**
- * Created by fengyongge on 16/5/12.
+ * @author fengyongge
+ * @Description
+ * @date 2017/6/30 0030 下午 3:56
  */
+public class DKApi {
+    private static DKApi _instance = null;
+    public final static String NET_DOMAIN = "http://api.*.com/dkapiv2.php";
+    public final static int DATA_SUCCESS = 10;
+    public final static int DATA_ERROR = 11;
+    public final static int NET_ERROR = 12;
+    public static String device = android.os.Build.MODEL;
+    public static String version = "A-1.1.0";
+    private com.alibaba.fastjson.JSONObject jsonObject;
+    private String strUrl;
 
-    public class MyNet {
-        private static MyNet _instance = null;
-        public final static String NET_DOMAIN ="http://api.ediankai.com/dkapiv2.php";
-        public final static int DATA_SUCCESS = 10;
-        public final static int DATA_ERROR = 11;
-        public final static int NET_ERROR = 12;
-        public static String device = android.os.Build.MODEL;
-        public static String version = "A-1.1.0";
-        private com.alibaba.fastjson.JSONObject jsonObject;
-        private String strUrl;
+    private DKApi() {
 
-        private MyNet() {
+    }
 
+    public static DKApi Inst() {
+        if (_instance == null) {
+            _instance = new DKApi();
         }
-
-        public static MyNet Inst() {
-            if (_instance == null) {
-                _instance = new MyNet();
-            }
-            return _instance;
-        }
+        return _instance;
+    }
 
     // 登录
     public void Login(final Context context, final String mobile,
@@ -93,7 +94,6 @@ import app.netframe.utils.NetUtils;
     }
 
 
-
     public void commRequest(final Context ctx, String apiUri,
                             List<NameValuePair> params, final ApiCallback callback) {
         Handler handler = new Handler(new Handler.Callback() {
@@ -132,7 +132,7 @@ import app.netframe.utils.NetUtils;
             public void run() {
 
                 try {
-                    jsonObject = NetUtils
+                    jsonObject = MyNetUtils
                             .getResponseForPost(apiUri, params, ctx);
 
                     if (jsonObject != null
@@ -157,7 +157,9 @@ import app.netframe.utils.NetUtils;
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
-            };
+            }
+
+            ;
         }.start();
 
     }
@@ -201,5 +203,3 @@ import app.netframe.utils.NetUtils;
     }
 
 }
-
-

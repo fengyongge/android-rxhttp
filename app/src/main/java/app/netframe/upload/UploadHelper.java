@@ -1,4 +1,4 @@
-package app.netframe.utils;
+package app.netframe.upload;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -18,6 +18,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
+
+import app.netframe.utils.FormatTools;
+
 /**
  * Created by fengyongge on 16/5/12.
  */

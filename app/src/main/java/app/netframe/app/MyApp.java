@@ -7,6 +7,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import app.netframe.utils.LogUtils;
+
 /**
  * Created by fengyongge on 2016/12/1 0001.
  */
@@ -19,6 +21,9 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //初始化
+        LogUtils.init(AppConfig.DEBUG);
 
         instance = (MyApp) getApplicationContext();
 
