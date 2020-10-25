@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.netframe">
+    package="com.fengyongge">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -14,13 +14,13 @@
 
 
     <application
-        android:name=".app.MyApp"
+        android:name="com.fengyongge.app.MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.fengyongge.rxhttpsample.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

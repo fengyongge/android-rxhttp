@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+group='com.github.fengyongge'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
 
     defaultConfig {
-        applicationId "app.netframe"
-        minSdkVersion 15
-        targetSdkVersion 22
+        applicationId "com.fengyongge.rxhttpsample"
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -22,23 +24,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
-
-    compile 'com.orhanobut:logger:1.15'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'top.zibin:Luban:1.0.9'
-    compile 'com.google.code.gson:gson:2.8.0'
-    testCompile 'junit:junit:4.12'
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.squareup.okio:okio:1.9.0'
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
-
-
-
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'junit:junit:4.12'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation project(":rxhttp")
 
 }
 
@@ -46,4 +37,7 @@ dependencies {
 
 android {
     useLibrary 'org.apache.http.legacy'
+}
+repositories {
+    mavenCentral()
 }
